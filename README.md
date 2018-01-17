@@ -7,6 +7,16 @@
 
 Elixir is a dynamic, functional language designed for building scalable and maintainable applications.
 
+## Additional Operators
+
+| Operator | Purpose / intended usage | Status |
+|----------|--------------------------|--------|
+|  `>>=`   | Monad.bind               | OK     |
+|  `=<<`   | Monad.bind               | OK     |
+|  `<$>`   | Functor.map              | OK     |
+
+
+
 For more about Elixir, installation and documentation,
 [check Elixir's website](http://elixir-lang.org/).
 
