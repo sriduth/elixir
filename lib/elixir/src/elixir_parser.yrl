@@ -65,7 +65,7 @@ Left     130 or_op_eol.       %% ||, |||, or
 Left     140 and_op_eol.      %% &&, &&&, and
 Left     150 comp_op_eol.     %% ==, !=, =~, ===, !==
 Left     160 rel_op_eol.      %% <, >, <=, >=
-Left     170 arrow_op_eol.    %% |>, <<<, >>>, ~>>, <<~, ~>, <~, <~>, <|>
+Left     170 arrow_op_eol.    %% |>, <<<, >>>, ~>>, <<~, ~>, <~, <~>, <|>, <$>, >>=, =<<
 Left     180 in_op_eol.       %% in, not in
 Left     190 three_op_eol.    %% ^^^
 Right    200 two_op_eol.      %% ++, --, .., <>
@@ -179,6 +179,7 @@ matched_op_expr -> pipe_op_eol matched_expr : {'$1', '$2'}.
 matched_op_expr -> comp_op_eol matched_expr : {'$1', '$2'}.
 matched_op_expr -> rel_op_eol matched_expr : {'$1', '$2'}.
 matched_op_expr -> arrow_op_eol matched_expr : {'$1', '$2'}.
+    
 %% Warn for no parens subset
 matched_op_expr -> arrow_op_eol no_parens_one_expr : warn_pipe('$1', '$2'), {'$1', '$2'}.
 
@@ -437,6 +438,7 @@ rel_op_eol -> rel_op : '$1'.
 rel_op_eol -> rel_op eol : next_is_eol('$1').
 
 arrow_op_eol -> arrow_op : '$1'.
+arrow_op_eol -> '$' : '$1'.
 arrow_op_eol -> arrow_op eol : next_is_eol('$1').
 
 % Dot operator

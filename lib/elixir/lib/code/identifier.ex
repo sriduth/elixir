@@ -41,12 +41,14 @@ defmodule Code.Identifier do
       op in [:&&, :&&&, :and] -> {:left, 140}
       op in [:==, :!=, :=~, :===, :!==] -> {:left, 150}
       op in [:<, :<=, :>=, :>] -> {:left, 160}
-      op in [:|>, :<<<, :>>>, :<~, :~>, :<<~, :~>>, :<~>, :<|>] -> {:left, 170}
+      op in [:|>, :<<<, :>>>, :<~, :~>, :<<~, :~>>, :<~>, :<|>, :>=, :>>=] -> {:left, 170}
+      op in [:=<<] -> {:right, 175}
       op in [:in] -> {:left, 180}
       op in [:^^^] -> {:left, 190}
       op in [:++, :--, :.., :<>] -> {:right, 200}
       op in [:+, :-] -> {:left, 210}
       op in [:*, :/] -> {:left, 220}
+      op in [:"<*>"] -> {:left, 230}
       op in [:.] -> {:left, 310}
       true -> :error
     end
