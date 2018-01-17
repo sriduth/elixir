@@ -438,7 +438,6 @@ rel_op_eol -> rel_op : '$1'.
 rel_op_eol -> rel_op eol : next_is_eol('$1').
 
 arrow_op_eol -> arrow_op : '$1'.
-arrow_op_eol -> '$' : '$1'.
 arrow_op_eol -> arrow_op eol : next_is_eol('$1').
 
 % Dot operator
