@@ -1323,7 +1323,7 @@ defmodule Kernel do
   Returns `true` if the two items are equal.
 
   This operator considers 1 and 1.0 to be equal. For stricter
-  semantics, use `===` instead.
+  semantics, use `===/2` instead.
 
   All terms in Elixir can be compared with each other.
 
@@ -1555,7 +1555,7 @@ defmodule Kernel do
     optimize_boolean(
       quote do
         case unquote(value) do
-          x when x in [false, nil] -> false
+          x when :"Elixir.Kernel".in(x, [false, nil]) -> false
           _ -> true
         end
       end
@@ -1566,7 +1566,7 @@ defmodule Kernel do
     optimize_boolean(
       quote do
         case unquote(value) do
-          x when x in [false, nil] -> true
+          x when :"Elixir.Kernel".in(x, [false, nil]) -> true
           _ -> false
         end
       end
@@ -1581,7 +1581,7 @@ defmodule Kernel do
       iex> "foo" <> "bar"
       "foobar"
 
-  The `<>` operator can also be used in pattern matching (and guard clauses) as
+  The `<>/2` operator can also be used in pattern matching (and guard clauses) as
   long as the first part is a literal binary:
 
       iex> "foo" <> x = "foobar"
@@ -2838,7 +2838,7 @@ defmodule Kernel do
     optimize_boolean(
       quote do
         case unquote(condition) do
-          x when x in [false, nil] -> unquote(else_clause)
+          x when :"Elixir.Kernel".in(x, [false, nil]) -> unquote(else_clause)
           _ -> unquote(do_clause)
         end
       end
@@ -3006,7 +3006,7 @@ defmodule Kernel do
   defmacro left && right do
     quote do
       case unquote(left) do
-        x when x in [false, nil] ->
+        x when :"Elixir.Kernel".in(x, [false, nil]) ->
           x
 
         _ ->
@@ -3042,7 +3042,7 @@ defmodule Kernel do
   defmacro left || right do
     quote do
       case unquote(left) do
-        x when x in [false, nil] ->
+        x when :"Elixir.Kernel".in(x, [false, nil]) ->
           unquote(right)
 
         x ->
@@ -3134,10 +3134,11 @@ defmodule Kernel do
     fun = fn {x, pos}, acc ->
       case x do
         {op, _, [_]} when op == :+ or op == :- ->
-          :elixir_errors.warn(__CALLER__.line, __CALLER__.file, <<
-            "piping into a unary operator is deprecated, please use the ",
-            "qualified name. For example, Kernel.+(5), instead of +5"
-          >>)
+          message =
+            <<"piping into a unary operator is deprecated, please use the ",
+              "qualified name. For example, Kernel.+(5), instead of +5">>
+
+          :elixir_errors.warn(__CALLER__.line, __CALLER__.file, message)
 
         _ ->
           :ok
@@ -4794,10 +4795,6 @@ defmodule Kernel do
 
       for fun <- List.wrap(funs) do
         {name, args, as, as_args} = Kernel.Utils.defdelegate(fun, opts)
-
-        unless Module.get_attribute(__MODULE__, :doc) do
-          @doc "See `#{inspect(target)}.#{as}/#{:erlang.length(args)}`."
-        end
 
         def unquote(name)(unquote_splicing(args)) do
           unquote(target).unquote(as)(unquote_splicing(as_args))

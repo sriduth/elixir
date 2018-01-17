@@ -3,8 +3,8 @@ defmodule Date do
   A Date struct and functions.
 
   The Date struct contains the fields year, month, day and calendar.
-  New dates can be built with the `new/3` function or using the `~D`
-  sigil:
+  New dates can be built with the `new/3` function or using the
+  [`~D`](`Kernel.sigil_D/2`) sigil:
 
       iex> ~D[2000-01-01]
       ~D[2000-01-01]
@@ -29,7 +29,7 @@ defmodule Date do
 
   ## Comparing dates
 
-  Comparisons in Elixir using `==`, `>`, `<` and similar are structural
+  Comparisons in Elixir using `==/2`, `>/2`, `</2` and similar are structural
   and based on the `Date` struct fields. For proper comparison between
   dates, use the `compare/2` function.
 

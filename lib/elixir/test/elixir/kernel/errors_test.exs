@@ -19,6 +19,16 @@ defmodule Kernel.ErrorsTest do
                       'fn x, y \\\\ 1 -> x + y end'
   end
 
+  test "invalid fn" do
+    assert_eval_raise SyntaxError,
+                      "nofile:1: expected anonymous functions to be defined with -> inside: 'fn'",
+                      'fn 1 end'
+
+    assert_eval_raise SyntaxError,
+                      ~r"nofile:2: unexpected operator ->. If you want to define multiple clauses, ",
+                      'fn 1\n2 -> 3 end'
+  end
+
   test "invalid token" do
     assert_eval_raise SyntaxError,
                       "nofile:1: unexpected token: \"\u200B\" (column 7, codepoint U+200B)",
@@ -92,12 +102,6 @@ defmodule Kernel.ErrorsTest do
 
       assert_eval_raise SyntaxError, message, :unicode.characters_to_nfd_list("foó")
     end
-  end
-
-  test "invalid fn" do
-    assert_eval_raise SyntaxError,
-                      "nofile:1: expected clauses to be defined with -> inside: 'fn'",
-                      'fn 1 end'
   end
 
   test "kw missing space" do
@@ -575,32 +579,8 @@ defmodule Kernel.ErrorsTest do
                       'Module.eval_quoted Record, quote(do: 1), [], file: __ENV__.file'
   end
 
-  test "doc attributes format" do
-    message =
-      "expected the moduledoc attribute to be {line, doc} (where \"doc\" is " <>
-        "a binary, a boolean, or nil), got: \"Other\""
-
-    assert_raise ArgumentError, message, fn ->
-      defmodule DocAttributesFormat do
-        Module.put_attribute(__MODULE__, :moduledoc, "Other")
-      end
-    end
-
-    message =
-      "expected the moduledoc attribute to contain a binary, a boolean, or nil, got: :not_a_binary"
-
-    assert_raise ArgumentError, message, fn ->
-      defmodule AtSyntaxDocAttributesFormat do
-        @moduledoc :not_a_binary
-      end
-    end
-  end
-
   test "@on_load attribute format" do
-    message =
-      "expected the @on_load attribute to be an atom or a {atom, 0} tuple, got: \"not an atom\""
-
-    assert_raise ArgumentError, message, fn ->
+    assert_raise ArgumentError, ~r/should be an atom or a {atom, 0} tuple/, fn ->
       defmodule BadOnLoadAttribute do
         Module.put_attribute(__MODULE__, :on_load, "not an atom")
       end

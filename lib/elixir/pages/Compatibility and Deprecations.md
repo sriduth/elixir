@@ -6,35 +6,15 @@ Erlang/OTP versioning is independent from the versioning of Elixir. Each version
 
 Elixir version | Supported Erlang/OTP versions
 :------------- | :----------------------------
-v1.0.0         | 17
-v1.0.1         | 17
-v1.0.2         | 17
-v1.0.3         | 17
-v1.0.4         | 17
-v1.0.5         | 17-18
-v1.1.0         | 17-18
-v1.1.1         | 17-18
-v1.2.0         | 18
-v1.2.1         | 18
-v1.2.2         | 18
-v1.2.3         | 18
-v1.2.4         | 18
-v1.2.5         | 18
-v1.2.6         | 18-19
-v1.3.0         | 18-19
-v1.3.1         | 18-19
-v1.3.2         | 18-19
-v1.3.3         | 18-19
-v1.3.4         | 18-19
-v1.4.0         | 18-19
-v1.4.1         | 18-19
-v1.4.2         | 18-19
-v1.4.3         | 18-19
-v1.4.4         | 18-19
-v1.4.5         | 18-20
-v1.5.0         | 18-20
-v1.5.1         | 18-20
-v1.5.2         | 18-20
+1.0            | 17 - 17 (and OTP 18 from v1.0.5)
+1.1            | 17 - 18
+1.2            | 18 - 18 (and OTP 19 from v1.2.6)
+1.3            | 18 - 19
+1.4            | 18 - 19 (and OTP 20 from v1.4.5)
+1.5            | 18 - 20
+1.6            | 19 - 20
+
+While Elixir often adds compatibility to new Erlang versions on released branches, such as support for OTP 20 in v1.4.5, those releases usually contain the minimum changes for Elixir to run without errors. Only the next minor release, in this case v1.5.0, does effectively leverage the new features provided by the latest Erlang release.
 
 ## Deprecations
 
@@ -52,11 +32,14 @@ Elixir deprecations happen in 3 steps:
 
 Deprecated feature                               | Deprecated in | Replaced by (available since)
 :----------------------------------------------- | :------------ | :----------------------------
+`Enum.chunk/2/3/4`                               | [v1.7]        | `Enum.chunk_every/2/3/4` (v1.5)
+`not left in right`                              | [v1.7]        | `left not in right` (v1.5)
+`Stream.chunk/2/3/4`                             | [v1.7]        | `Stream.chunk_every/2/3/4` (v1.5)
 `Enum.partition/2`                               | [v1.6]        | `Enum.split_with/2` (v1.4)
 `Keyword.replace/3`                              | [v1.6]        | Use `Keyword.fetch/2` + `Keyword.put/3` (v1.0)
-`Map.replace/3`                                  | [v1.6]        | Use `Map.fetch/2` + `Map.put/3` (v1.0)
 `Macro.unescape_tokens/1` and `Macro.unescape_tokens/2` | [v1.6] | Use `Enum.map/2` to traverse over the arguments (v1.0)
-`Range.range?/1`                                 | [v1.6]        | Pattern match on `left..right` instead (v1.0)
+`Map.replace/3`                                  | [v1.6]        | Use `Map.fetch/2` + `Map.put/3` (v1.0)
+`Range.range?/1`                                 | [v1.6]        | Pattern match on `_.._` instead (v1.0)
 `Atom.to_char_list/1`                            | [v1.5]        | `Atom.to_charlist/1` (v1.3)
 `Enum.filter_map/3`                              | [v1.5]        | `Enum.filter/2` + `Enum.map/2` or for comprehensions (v1.0)
 `Float.to_char_list/1`                           | [v1.5]        | `Float.to_charlist/1` (v1.3)
@@ -85,12 +68,12 @@ EEx: `<%=` in middle and end expressions         | [v1.5]        | Use `<%` (= i
 `HashSet` module                                 | [v1.4]        | `MapSet` (v1.1)
 `Set` module                                     | [v1.4]        | `MapSet` (v1.1)
 `Stream.uniq/2`                                  | [v1.4]        | `Stream.uniq_by/2` (v1.2)
-`IEx.Helpers.import_file/2`                      | [v1.4]        | [`IEx.Helpers.import_file_if_available/1`](https://hexdocs.pm/iex/IEx.Helpers.html#import_file_if_available/1) (v1.3)
+`IEx.Helpers.import_file/2`                      | [v1.4]        | `IEx.Helpers.import_file_if_available/1` (v1.3)
 `Mix.Utils.camelize/1`                           | [v1.4]        | `Macro.camelize/1` (v1.2)
 `Mix.Utils.underscore/1`                         | [v1.4]        | `Macro.underscore/1` (v1.2)
 Variable used as function call                   | [v1.4]        | Use parentheses (v1.0)
 Anonymous functions with no expression after `->` | [v1.4]       | Use an expression or explicitly return `nil` (v1.0)
-`Dict` module                                    | [v1.3]        | `Keyword` (v1.0);<br/>`Map` (v1.2)
+`Dict` module                                    | [v1.3]        | `Keyword` (v1.0) or `Map` (v1.2)
 `Keyword.size/1`                                 | [v1.3]        | `Kernel.length/1` (v1.0)
 `Map.size/1`                                     | [v1.3]        | `Kernel.map_size/1` (v1.0)
 `Set` behaviour                                  | [v1.3]        | `MapSet` data structure (v1.1)
@@ -103,9 +86,8 @@ Map or dictionary as second argument in `Enum.group_by/3` | [v1.3] | Use `Enum.r
 Non-map as second argument in `URI.decode_query/2` | [v1.3]      | Use a map (v1.0)
 `Dict` behaviour                                 | [v1.2]        | `MapSet` data structure (v1.1)
 `Access` protocol                                | [v1.1]        | `Access` behaviour (v1.1)
-`as: true \| false` in `alias/2` and `require/2` | [v1.1]     | *None*
+`as: true \| false` in `alias/2` and `require/2` | [v1.1]        | *None*
 `?\xHEX`                                         | [v1.1]        | `0xHEX` (v1.0)
-Empty string in `String.starts_with?/2`, `String.ends_with?/2`, `String.contains?/2`.<br/>*__NOTE__: Feature made back available in v1.3* | [v1.1] to [v1.2] | Explicitly check for `""` beforehand (v1.0)
 
 [v1.1]: https://github.com/elixir-lang/elixir/blob/v1.1/CHANGELOG.md#4-deprecations
 [v1.2]: https://github.com/elixir-lang/elixir/blob/v1.2/CHANGELOG.md#changelog-for-elixir-v12

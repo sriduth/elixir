@@ -11,11 +11,15 @@ defmodule Mix.Tasks.Format do
   If any of the files is `-`, then the output is read from stdin
   and written to stdout.
 
+  ## Formatting options
+
   Formatting is done with the `Code.format_string!/2` function.
+  For complete list of formatting options please refer to its
+  description.
   A `.formatter.exs` file can also be defined for customizing input
   files and the formatter itself.
 
-  ## Options
+  ## Task-specific options
 
     * `--check-formatted` - check that the file is already formatted.
       This is useful in pre-commit hooks and CI scripts if you want to
@@ -68,7 +72,7 @@ defmodule Mix.Tasks.Format do
   project.
 
   It is also possible to format code across the whole project by passing a list
-  of patterns and files to `mix format`, as showed at the top of this task
+  of patterns and files to `mix format`, as shown at the top of this task
   documentation. This list can also be set in the `.formatter.exs` under the
   `:inputs` key.
 
@@ -210,11 +214,19 @@ defmodule Mix.Tasks.Format do
   defp assert_valid_dep_and_fetch_path(dep, deps_paths) when is_atom(dep) do
     case Map.fetch(deps_paths, dep) do
       {:ok, path} ->
-        path
+        if File.dir?(path) do
+          path
+        else
+          Mix.raise(
+            "Unavailable dependency #{inspect(dep)} given to :import_deps in the formatter configuration. " <>
+              "The dependency cannot be found in the filesystem, please run mix deps.get and try again"
+          )
+        end
 
       :error ->
         Mix.raise(
-          "Found a dependency in :import_deps that the project doesn't depend on: #{inspect(dep)}"
+          "Unknown dependency #{inspect(dep)} given to :import_deps in the formatter configuration. " <>
+            "The dependency is not listed in your mix.exs file"
         )
     end
   end

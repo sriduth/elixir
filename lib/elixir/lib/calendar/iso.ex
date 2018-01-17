@@ -35,7 +35,7 @@ defmodule Calendar.ISO do
   @days_per_leap_year 366
 
   @doc """
-  Returns the `t:Calendar.iso_days` format of the specified date.
+  Returns the `t:Calendar.iso_days/0` format of the specified date.
 
   ## Examples
 
@@ -62,7 +62,7 @@ defmodule Calendar.ISO do
   end
 
   @doc """
-  Converts the `t:Calendar.iso_days` format to the datetime format specified by this calendar.
+  Converts the `t:Calendar.iso_days/0` format to the datetime format specified by this calendar.
 
   ## Examples
 
@@ -74,16 +74,15 @@ defmodule Calendar.ISO do
       {2000, 1, 1, 12, 0, 0, {0, 6}}
 
   """
-  @spec naive_datetime_from_iso_days(Calendar.iso_days()) ::
-          {
-            Calendar.year(),
-            Calendar.month(),
-            Calendar.day(),
-            Calendar.hour(),
-            Calendar.minute(),
-            Calendar.second(),
-            Calendar.microsecond()
-          }
+  @spec naive_datetime_from_iso_days(Calendar.iso_days()) :: {
+          Calendar.year(),
+          Calendar.month(),
+          Calendar.day(),
+          Calendar.hour(),
+          Calendar.minute(),
+          Calendar.second(),
+          Calendar.microsecond()
+        }
   @impl true
   def naive_datetime_from_iso_days({days, day_fraction}) do
     {year, month, day} = date_from_iso_days(days)

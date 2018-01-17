@@ -8,6 +8,20 @@ defmodule Kernel.WarningTest do
     capture_io(:stderr, fun)
   end
 
+  test "outdented heredoc" do
+    output =
+      capture_err(fn ->
+        Code.eval_string("""
+          '''
+        outdented
+          '''
+        """)
+      end)
+
+    assert output =~ "outdented heredoc line"
+    assert output =~ "nofile:2"
+  end
+
   test "unused variable" do
     output =
       capture_err(fn ->
@@ -489,7 +503,7 @@ defmodule Kernel.WarningTest do
     purge(Sample)
   end
 
-  test "`length(list) == 0` in guard" do
+  test "length(list) == 0 in guard" do
     assert capture_err(fn ->
              Code.eval_string("""
              defmodule Sample do
@@ -591,6 +605,12 @@ defmodule Kernel.WarningTest do
   after
     purge(Sample)
     purge(UseSample)
+  end
+
+  test "deprecated not left in right" do
+    assert capture_err(fn ->
+             Code.eval_string("not 1 in [1, 2, 3]")
+           end) =~ "deprecated"
   end
 
   test "clause with defaults should be first" do

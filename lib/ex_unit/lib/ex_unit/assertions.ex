@@ -670,11 +670,14 @@ defmodule ExUnit.Assertions do
   @doc """
   Asserts that `value1` and `value2` differ by no more than `delta`.
 
+  This difference is inclusive, so the test will pass if the difference
+  and the `delta` are equal.
 
   ## Examples
 
       assert_in_delta 1.1, 1.5, 0.2
-      assert_in_delta 10, 15, 4
+      assert_in_delta 10, 15, 2
+      assert_in_delta 10, 15, 5
 
   """
   def assert_in_delta(value1, value2, delta, message \\ nil)
@@ -689,9 +692,9 @@ defmodule ExUnit.Assertions do
     message =
       message ||
         "Expected the difference between #{inspect(value1)} and " <>
-          "#{inspect(value2)} (#{inspect(diff)}) to be less than #{inspect(delta)}"
+          "#{inspect(value2)} (#{inspect(diff)}) to be less than or equal to #{inspect(delta)}"
 
-    assert diff < delta, message
+    assert diff <= delta, message
   end
 
   @doc """
@@ -839,6 +842,9 @@ defmodule ExUnit.Assertions do
 
   @doc """
   Asserts `value1` and `value2` are not within `delta`.
+
+  This difference is exclusive, so the test will fail if the difference
+  and the delta are equal.
 
   If you supply `message`, information about the values will
   automatically be appended to it.

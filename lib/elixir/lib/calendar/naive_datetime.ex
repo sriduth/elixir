@@ -4,7 +4,8 @@ defmodule NaiveDateTime do
 
   The NaiveDateTime struct contains the fields year, month, day, hour,
   minute, second, microsecond and calendar. New naive datetimes can be
-  built with the `new/2` and `new/7` functions or using the `~N` sigil:
+  built with the `new/2` and `new/7` functions or using the
+  [`~N`](`Kernek.sigil_N/2`) sigil:
 
       iex> ~N[2000-01-01 23:00:07]
       ~N[2000-01-01 23:00:07]
@@ -38,7 +39,7 @@ defmodule NaiveDateTime do
 
   ## Comparing naive date times
 
-  Comparisons in Elixir using `==`, `>`, `<` and similar are structural
+  Comparisons in Elixir using `==/2`, `>/2`, `</2` and similar are structural
   and based on the `NaiveDateTime` struct fields. For proper comparison
   between naive datetimes, use the `compare/2` function.
 
