@@ -113,6 +113,7 @@
 -define(pipe_op(T),
   T == $|).
 
+
 tokenize(String, Line, Column, #elixir_tokenizer{} = Scope) ->
   tokenize(String, Line, Column, Scope, []);
 
@@ -321,9 +322,19 @@ tokenize([T1, T2, T3 | Rest], Line, Column, Scope, Tokens) when ?or_op3(T1, T2, 
 tokenize([T1, T2, T3 | Rest], Line, Column, Scope, Tokens) when ?three_op(T1, T2, T3) ->
   handle_op(Rest, Line, Column, three_op, 3, list_to_atom([T1, T2, T3]), Scope, Tokens);
 
-tokenize([T1, T2, T3 | Rest], Line, Column, Scope, Tokens) when ?arrow_op3(T1, T2, T3) ->
-  handle_op(Rest, Line, Column, arrow_op, 3, list_to_atom([T1, T2, T3]), Scope, Tokens);
 
+%% To handle >>=, parse >> and append an extra = to the rest to make it a bitstring match
+%% is an opening brace for a bitstring match '<<' was found in the token stream earlier.
+tokenize([T1, T2, T3 | Rest], Line, Column, Scope, Tokens) when ?arrow_op3(T1, T2, T3) ->
+  case bitstring_terminator_is_bind(Tokens) and ([T1, T2, T3] == [$>, $>, $=]) of
+      true ->  
+	  Token = {'>>', {Line, Column, previous_was_eol(Tokens)}},
+	  RestOfPattern = "=" ++ Rest,
+	  handle_terminator(RestOfPattern, Line, Column + 3, Scope, Token, Tokens);
+      false ->
+	  handle_op(Rest, Line, Column, arrow_op, 3, list_to_atom([T1, T2, T3]), Scope, Tokens)
+  end;
+  
 % ## Containers + punctuation tokens
 tokenize([$, | Rest], Line, Column, Scope, Tokens) ->
   Token = {',', {Line, Column, 0}},
@@ -1059,6 +1070,13 @@ interpolation_format({_, _, _} = Reason, _Extension, _Args) ->
 
 %% Terminators
 
+
+%% Handle >> as bitstring terminator only if << was encountered
+%% previously. Else take it as bind (>>=)
+bitstring_terminator_is_bind(Tokens) ->
+  VisitedTokens = lists:map(fun (VisitedToken) -> element(1, VisitedToken) end, Tokens),
+  lists:member('<<', VisitedTokens).
+
 handle_terminator(Rest, Line, Column, Scope, Token, Tokens) ->
   case handle_terminator(Token, Scope) of
     {error, Reason} ->
@@ -1220,3 +1238,5 @@ invalid_do_with_fn_error(Prefix) ->
   Prefix ++ ". Anonymous functions are written as:\n\n"
   "    fn pattern -> expression end\n\n"
   "Syntax error before: ".
+
+
